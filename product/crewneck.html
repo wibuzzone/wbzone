@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wibuzone Apparel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background:#050505;
+  color:white;
+  overflow-x:hidden;
+}
+
+/* CART */
+.cart{
+  position:fixed;
+  top:15px;
+  right:15px;
+  background:#111;
+  border:1px solid #222;
+  padding:8px 12px;
+  border-radius:10px;
+  font-size:13px;
+}
+
+/* HEADER */
+.header{text-align:center;padding:20px;}
+.header h1{
+  font-size:30px;
+  letter-spacing:2px;
+  font-weight:800;
+}
+.header p{
+  font-size:13px;
+  color:#aaa;
+  font-style:italic;
+}
+
+/* PRODUCT */
+.product{text-align:center;padding:10px;}
+.product img{
+  width:100%;
+  max-width:320px;
+  filter:drop-shadow(0 25px 50px rgba(0,0,0,0.9));
+}
+
+/* CARD */
+.card{
+  margin:15px;
+  padding:20px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  backdrop-filter:blur(6px);
+}
+
+/* PRICE */
+.price{
+  font-size:26px;
+  font-weight:600;
+}
+
+.stock{color:#00ffaa;font-size:14px;}
+.timer{color:#ff5555;font-size:14px;}
+
+.desc{
+  color:#ccc;
+  font-size:14px;
+  margin-top:10px;
+  line-height:1.5;
+}
+
+/* SIZE */
+.size button{
+  margin:5px;
+  padding:10px;
+  border-radius:8px;
+  background:#111;
+  border:1px solid #222;
+  color:white;
+}
+.size button.active{
+  background:#222;
+  border:1px solid #555;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(145deg,#111,#222);
+  color:white;
+  font-size:15px;
+  transition:0.3s;
+}
+.btn:hover{
+  background:linear-gradient(145deg,#222,#333);
+}
+
+/* ðŸ”” NOTIF */
+.notif{
+  position:fixed;
+  top:15px;
+  left:15px;
+  background:rgba(15,15,15,0.9);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  opacity:0;
+  transform:translateY(-20px) scale(0.95);
+  transition:0.3s ease;
+  z-index:999;
+  max-width:240px;
+}
+
+.notif-header{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:600;
+}
+
+.notif-body{
+  display:flex;
+  gap:8px;
+}
+
+.notif img{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+}
+
+.notif.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+.notif:hover{
+  opacity:0.5;
+}
+
+#notifMain{
+  line-height:1.3;
+}
+#notifMain b{
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="cart">ðŸ›’ <span id="cart">0</span></div>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>WIBUZONE APPAREL</h1>
+  <p>Where Passion Meets Innovation</p>
+</div>
+
+<!-- PRODUCT -->
+<div class="product">
+  <img src="https://i.ibb.co.com/Xfq9LFyd/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-174634-0000.png">
+</div>
+
+<!-- INFO -->
+<div class="card">
+  <div class="price">$11.9 (~Rp185.000)</div>
+  <div class="stock">Stock tersisa: <span id="stock">6</span></div>
+  <div class="timer">Diskon habis: <span id="countdown"></span></div>
+
+  <div class="desc">
+    Crewneck premium bahan <b>Fleece Cotton 400 GSM</b><br>
+    âœ” Bordir towel premium<br>
+    âœ” Tebal & hangat<br>
+    âœ” Nyaman dipakai
+  </div>
+
+  <div class="size">
+    <p>Pilih Size:</p>
+    <button onclick="pick(this)">M</button>
+    <button onclick="pick(this)">L</button>
+    <button onclick="pick(this)">XL</button>
+  </div>
+
+  <button class="btn" onclick="addCart()">Tambah ke Keranjang</button>
+  <button class="btn" onclick="buy()">Beli Sekarang</button>
+</div>
+
+<!-- ðŸ”” NOTIF -->
+<div class="notif" id="notif">
+  <div class="notif-header">ðŸ”” Pembelian Baru</div>
+  <div class="notif-body">
+    <img id="notifAvatar">
+    <div>
+      <div id="notifMain"></div>
+      <small id="notifTime" style="color:#aaa;"></small>
+    </div>
+  </div>
+</div>
+
+<script>
+// SIZE
+function pick(el){
+  document.querySelectorAll('.size button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// CART + STOCK
+let cart = 0;
+let stock = 7;
+
+function addCart(){
+  if(stock <= 0){
+    alert("Stock habis!");
+    return;
+  }
+  cart++;
+  stock--;
+  document.getElementById("cart").innerText = cart;
+  document.getElementById("stock").innerText = stock;
+}
+
+// BUY
+function buy(){
+  let size = document.querySelector('.active');
+  if(!size){
+    alert("Pilih size dulu!");
+    return;
+  }
+  let text = "Order Crewneck WIBUZONE size " + size.innerText;
+  window.open("https://wa.me/6281284760551?text="+encodeURIComponent(text));
+}
+
+// COUNTDOWN
+let end = new Date().getTime() + (3*24*60*60*1000);
+
+setInterval(()=>{
+  let now = new Date().getTime();
+  let diff = end - now;
+
+  let d = Math.floor(diff/(1000*60*60*24));
+  let h = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  let m = Math.floor((diff%(1000*60*60))/(1000*60));
+
+  document.getElementById("countdown").innerText = d+"H "+h+"J "+m+"M";
+},1000);
+
+// ðŸ”” NOTIF
+let buyers = [
+  {name:"Rizky", city:"Bandung", text:"Gila bahannya tebel banget!"},
+  {name:"Andi", city:"Jakarta", text:"Asli keren parah"},
+  {name:"Fajar", city:"Surabaya", text:"Bordirnya keliatan mahal"},
+  {name:"Dimas", city:"Medan", text:"Nyaman dipakai"},
+  {name:"Adit", city:"Bekasi", text:"Worth it banget"},
+  {name:"Ilham", city:"Depok", text:"Fix beli lagi"}
+];
+
+function randomTime(){
+  let times = ["Barusan","1 menit lalu","2 menit lalu","5 menit lalu"];
+  return times[Math.floor(Math.random()*times.length)];
+}
+
+setInterval(()=>{
+  let user = buyers[Math.floor(Math.random()*buyers.length)];
+
+  document.getElementById("notifAvatar").src =
+    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random()*70);
+
+  document.getElementById("notifMain").innerHTML =
+    "<b>" + user.name + "</b> (" + user.city + ")<br>\"" + user.text + "\"";
+
+  document.getElementById("notifTime").innerText = randomTime();
+
+  let notif = document.getElementById("notif");
+  notif.classList.add("show");
+
+  setTimeout(()=>notif.classList.remove("show"),2500);
+
+},5000);
+</script>
+
+</body>
+    </html>
