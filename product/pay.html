@@ -50,6 +50,7 @@ select,button{
 button{
   background:linear-gradient(45deg,#ff6600,#ff0000);
   font-weight:bold;
+  cursor:pointer;
 }
 
 .total{
@@ -62,6 +63,7 @@ button{
   display:none;
   text-align:center;
   margin-top:15px;
+  animation:fade 0.5s ease;
 }
 
 .qr-box img{
@@ -87,7 +89,7 @@ button{
 <img src="https://i.ibb.co.com/Xfq9LFyd/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-174634-0000.png">
 <img src="https://i.ibb.co.com/cSWf64ZR/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-214024-0000.png">
 
-<select id="variant" onchange="updateTotal()">
+<select id="variant">
 <option value="185000">Reguler - Rp185.000</option>
 <option value="260000">Limited - Rp260.000</option>
 </select>
@@ -103,7 +105,7 @@ button{
 <div class="card">
 <h3>Pengiriman</h3>
 
-<select id="shipping" onchange="updateTotal()">
+<select id="shipping">
 <option value="15000">JNE - Rp15.000</option>
 <option value="18000">J&T - Rp18.000</option>
 <option value="20000">SiCepat - Rp20.000</option>
@@ -115,6 +117,7 @@ button{
 <h3>Pembayaran</h3>
 
 <select id="payment">
+<option value="">Pilih Metode</option>
 <option value="QRIS">QRIS</option>
 <option value="DANA">DANA</option>
 <option value="OVO">OVO</option>
@@ -139,16 +142,11 @@ button{
 </div>
 
 <script>
-
-<script>
-
 document.addEventListener("DOMContentLoaded", function(){
 
-// AMBIL ELEMENT
 const payment = document.getElementById("payment");
 const shipping = document.getElementById("shipping");
 const variant = document.getElementById("variant");
-const size = document.getElementById("size");
 
 const qrBox = document.getElementById("qrBox");
 const qrImg = document.getElementById("qrImg");
@@ -167,13 +165,13 @@ function updateTotal(){
   total.innerText = "Total: " + format(v + s);
 }
 
-// AUTO UPDATE
+// EVENT
 variant.addEventListener("change", updateTotal);
 shipping.addEventListener("change", updateTotal);
 
 updateTotal();
 
-// 🔥 GLOBAL FUNCTION (INI KUNCI NYA)
+// PAY
 window.pay = function(){
 
   if(!payment.value){
@@ -206,5 +204,7 @@ window.finish = function(){
 }
 
 });
-
 </script>
+
+</body>
+</html>
