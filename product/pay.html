@@ -140,9 +140,34 @@ button{
 
 <script>
 
+<script>
+
 // FORMAT
 function format(x){
   return "Rp"+x.toLocaleString("id-ID");
+}
+
+// AMBIL DATA DARI URL
+let url = new URLSearchParams(window.location.search);
+let selectedVariant = url.get("variant");
+let selectedSize = url.get("size");
+
+// AUTO SET VARIANT + SIZE
+window.onload = function(){
+
+  if(selectedVariant){
+    if(selectedVariant === "limited"){
+      document.getElementById("variant").value = "260000";
+    } else {
+      document.getElementById("variant").value = "185000";
+    }
+  }
+
+  if(selectedSize){
+    document.getElementById("size").value = selectedSize;
+  }
+
+  updateTotal();
 }
 
 // TOTAL
@@ -151,7 +176,6 @@ function updateTotal(){
   let s=parseInt(shipping.value);
   total.innerText="Total: "+format(v+s);
 }
-updateTotal();
 
 // QR GENERATOR
 function pay(){
@@ -176,15 +200,10 @@ function finish(){
 
   let inv = window.currentInv;
 
-  // simpan status unpaid
   localStorage.setItem(inv,"unpaid");
 
-  // redirect ke status page
   window.location.href = "status.html?inv="+inv;
 
 }
 
 </script>
-
-</body>
-</html>
