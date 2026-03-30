@@ -142,29 +142,39 @@ button{
 
 <script>
 
+// ELEMENT
+let variant = document.getElementById("variant");
+let size = document.getElementById("size");
+let shipping = document.getElementById("shipping");
+let payment = document.getElementById("payment");
+let total = document.getElementById("total");
+let qrBox = document.getElementById("qrBox");
+let qrImg = document.getElementById("qrImg");
+let invoice = document.getElementById("invoice");
+
 // FORMAT
 function format(x){
   return "Rp"+x.toLocaleString("id-ID");
 }
 
-// AMBIL DATA DARI URL
+// AMBIL PARAM URL
 let url = new URLSearchParams(window.location.search);
 let selectedVariant = url.get("variant");
 let selectedSize = url.get("size");
 
-// AUTO SET VARIANT + SIZE
+// AUTO FILL
 window.onload = function(){
 
   if(selectedVariant){
     if(selectedVariant === "limited"){
-      document.getElementById("variant").value = "260000";
+      variant.value = "260000";
     } else {
-      document.getElementById("variant").value = "185000";
+      variant.value = "185000";
     }
   }
 
   if(selectedSize){
-    document.getElementById("size").value = selectedSize;
+    size.value = selectedSize;
   }
 
   updateTotal();
@@ -172,12 +182,12 @@ window.onload = function(){
 
 // TOTAL
 function updateTotal(){
-  let v=parseInt(variant.value);
-  let s=parseInt(shipping.value);
-  total.innerText="Total: "+format(v+s);
+  let v = parseInt(variant.value);
+  let s = parseInt(shipping.value);
+  total.innerText = "Total: " + format(v+s);
 }
 
-// QR GENERATOR
+// BAYAR
 function pay(){
 
   let metode = payment.value;
@@ -186,13 +196,11 @@ function pay(){
 
   qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+data;
 
-  qrBox.style.display="block";
+  qrBox.style.display = "block";
 
-  // generate invoice
+  // invoice
   window.currentInv = "WBZ-"+Math.floor(Math.random()*100000);
-
-  invoice.innerText = "Invoice: "+window.currentInv;
-
+  invoice.innerText = "Invoice: " + window.currentInv;
 }
 
 // SELESAI
@@ -200,10 +208,14 @@ function finish(){
 
   let inv = window.currentInv;
 
+  if(!inv){
+    alert("Klik bayar dulu!");
+    return;
+  }
+
   localStorage.setItem(inv,"unpaid");
 
   window.location.href = "status.html?inv="+inv;
-
 }
 
 </script>
