@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - Wibuzone</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background:#050505;
+  color:white;
+  padding:20px;
+}
+
+.header{text-align:center;margin-bottom:20px;}
+.header h1{font-size:26px;font-weight:800;}
+.header p{color:#aaa;font-size:13px;font-style:italic;}
+
+.card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+input, textarea, select{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid #222;
+  background:#0f0f0f;
+  color:white;
+}
+
+.row{display:flex;gap:10px;}
+.row>*{flex:1;}
+
+.btn{
+  width:100%;
+  padding:15px;
+  margin-top:15px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(145deg,#111,#222);
+  color:white;
+}
+
+.total{margin-top:10px;font-size:15px;}
+
+.qr{
+  text-align:center;
+  display:none;
+}
+.qr img{
+  width:200px;
+  margin-top:10px;
+  border-radius:12px;
+}
+
+.success{
+  display:none;
+  text-align:center;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>WIBUZONE CHECKOUT</h1>
+  <p>Where Passion Meets Innovation</p>
+</div>
+
+<!-- DATA -->
+<div class="card">
+  <h3>Data Pembeli</h3>
+  <input id="nama" placeholder="Nama">
+  <input id="hp" placeholder="No WhatsApp">
+  <textarea id="alamat" placeholder="Alamat Lengkap"></textarea>
+</div>
+
+<!-- PRODUK -->
+<div class="card">
+  <h3>Detail Pesanan</h3>
+
+  <div class="row">
+    <select id="size">
+      <option value="">Size</option>
+      <option>M</option>
+      <option>L</option>
+      <option>XL</option>
+    </select>
+
+    <input type="number" id="qty" value="1" min="1" onchange="hitung()">
+  </div>
+
+  <input id="note" placeholder="Catatan (opsional)">
+
+  <div class="total">Harga: Rp185.000</div>
+  <div class="total">Ongkir: Rp<span id="ongkir">10000</span></div>
+  <div class="total"><b>Total: Rp<span id="total">195000</span></b></div>
+</div>
+
+<!-- PENGIRIMAN -->
+<div class="card">
+  <h3>Pengiriman</h3>
+
+  <select id="kurir" onchange="updateOngkir()">
+    <option value="">Pilih Ekspedisi</option>
+    <option value="10000">JNE</option>
+    <option value="12000">J&T</option>
+    <option value="9000">SiCepat</option>
+    <option value="8000">Shopee Express</option>
+    <option value="11000">AnterAja</option>
+  </select>
+</div>
+
+<!-- PEMBAYARAN -->
+<div class="card">
+  <h3>Pembayaran</h3>
+
+  <select id="metode" onchange="showQR()">
+    <option value="">Pilih Metode</option>
+    <option>QRIS</option>
+    <option>Bank Mandiri</option>
+    <option>Bank BCA</option>
+    <option>Bank BRI</option>
+    <option>DANA</option>
+    <option>OVO</option>
+    <option>GoPay</option>
+    <option>COD ( proses )</option>
+  </select>
+
+  <div class="qr" id="qrisBox">
+    <p style="color:#aaa;font-size:13px;">Scan / Transfer</p>
+    <img src="https://i.ibb.co.com/tPMC6c8P/IMG-20260330-WA0017.jpg">
+    <input type="file" id="bukti">
+  </div>
+</div>
+
+<button class="btn" onclick="checkout()">Checkout Sekarang</button>
+
+<div class="success" id="success">
+  <h2>✅ Order Masuk</h2>
+  <p style="color:#aaa;">Admin akan segera proses pesanan kamu</p>
+</div>
+
+<script>
+let harga = 185000;
+
+function hitung(){
+  let qty = document.getElementById("qty").value;
+  let ongkir = document.getElementById("ongkir").innerText;
+  let total = (harga * qty) + parseInt(ongkir);
+  document.getElementById("total").innerText = total;
+}
+
+function updateOngkir(){
+  let ongkir = document.getElementById("kurir").value;
+  document.getElementById("ongkir").innerText = ongkir;
+  hitung();
+}
+
+function showQR(){
+  let metode = document.getElementById("metode").value;
+  let qris = document.getElementById("qrisBox");
+
+  if(metode === "COD"){
+    qris.style.display = "none";
+  } else {
+    qris.style.display = "block";
+  }
+}
+
+function checkout(){
+  let nama = document.getElementById("nama").value;
+  let hp = document.getElementById("hp").value;
+  let alamat = document.getElementById("alamat").value;
+  let size = document.getElementById("size").value;
+  let qty = document.getElementById("qty").value;
+  let note = document.getElementById("note").value;
+  let metode = document.getElementById("metode").value;
+  let kurir = document.getElementById("kurir").options[document.getElementById("kurir").selectedIndex].text;
+  let total = document.getElementById("total").innerText;
+
+  if(!nama || !hp || !alamat || !size || !metode || !kurir){
+    alert("Lengkapi semua data!");
+    return;
+  }
+
+  let invoice = "INV" + Math.floor(Math.random()*999999);
+
+  let text =
+`ðŸ§¾ *ORDER WIBUZONE*
+
+Invoice: ${invoice}
+Nama: ${nama}
+No HP: ${hp}
+
+Produk: Crewneck WIBUZONE
+Size: ${size}
+Qty: ${qty}
+
+Pengiriman: ${kurir}
+
+Alamat:
+${alamat}
+
+Catatan: ${note}
+
+Metode: ${metode}
+Total: Rp${total}`;
+
+  window.open("https://wa.me/6281284760551?text="+encodeURIComponent(text));
+
+  document.getElementById("success").style.display = "block";
+}
+</script>
+
+</body>
+</html>
