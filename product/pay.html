@@ -142,80 +142,69 @@ button{
 
 <script>
 
-// ELEMENT
-let variant = document.getElementById("variant");
-let size = document.getElementById("size");
-let shipping = document.getElementById("shipping");
-let payment = document.getElementById("payment");
-let total = document.getElementById("total");
-let qrBox = document.getElementById("qrBox");
-let qrImg = document.getElementById("qrImg");
-let invoice = document.getElementById("invoice");
+document.addEventListener("DOMContentLoaded", function(){
+
+// AMBIL ELEMENT
+const payment = document.getElementById("payment");
+const shipping = document.getElementById("shipping");
+const variant = document.getElementById("variant");
+const size = document.getElementById("size");
+
+const qrBox = document.getElementById("qrBox");
+const qrImg = document.getElementById("qrImg");
+const invoice = document.getElementById("invoice");
+const total = document.getElementById("total");
 
 // FORMAT
 function format(x){
-  return "Rp"+x.toLocaleString("id-ID");
+  return "Rp" + x.toLocaleString("id-ID");
 }
 
-// AMBIL PARAM URL
-let url = new URLSearchParams(window.location.search);
-let selectedVariant = url.get("variant");
-let selectedSize = url.get("size");
-
-// AUTO FILL
-window.onload = function(){
-
-  if(selectedVariant){
-    if(selectedVariant === "limited"){
-      variant.value = "260000";
-    } else {
-      variant.value = "185000";
-    }
-  }
-
-  if(selectedSize){
-    size.value = selectedSize;
-  }
-
-  updateTotal();
-}
-
-// TOTAL
+// UPDATE TOTAL
 function updateTotal(){
-  let v = parseInt(variant.value);
-  let s = parseInt(shipping.value);
-  total.innerText = "Total: " + format(v+s);
+  let v = parseInt(variant.value || 0);
+  let s = parseInt(shipping.value || 0);
+  total.innerText = "Total: " + format(v + s);
 }
 
-// BAYAR
-function pay(){
+// AUTO UPDATE
+variant.addEventListener("change", updateTotal);
+shipping.addEventListener("change", updateTotal);
 
-  let metode = payment.value;
+updateTotal();
 
-  let data = "WIBUZONE-"+metode;
+// 🔥 GLOBAL FUNCTION (INI KUNCI NYA)
+window.pay = function(){
 
-  qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+data;
+  if(!payment.value){
+    alert("Pilih metode pembayaran!");
+    return;
+  }
+
+  let data = "WIBUZONE-" + payment.value;
+
+  qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + data;
 
   qrBox.style.display = "block";
 
-  // invoice
-  window.currentInv = "WBZ-"+Math.floor(Math.random()*100000);
+  window.currentInv = "WBZ-" + Math.floor(Math.random()*999999);
+
   invoice.innerText = "Invoice: " + window.currentInv;
 }
 
-// SELESAI
-function finish(){
+// FINISH
+window.finish = function(){
 
-  let inv = window.currentInv;
-
-  if(!inv){
+  if(!window.currentInv){
     alert("Klik bayar dulu!");
     return;
   }
 
-  localStorage.setItem(inv,"unpaid");
+  localStorage.setItem(window.currentInv, "unpaid");
 
-  window.location.href = "status.html?inv="+inv;
+  window.location.href = "status.html?inv=" + window.currentInv;
 }
+
+});
 
 </script>
