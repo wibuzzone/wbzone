@@ -13,7 +13,6 @@
 body{
   background:#050505;
   color:white;
-  overflow-x:hidden;
 }
 
 /* CART */
@@ -30,23 +29,67 @@ body{
 
 /* HEADER */
 .header{text-align:center;padding:20px;}
-.header h1{
-  font-size:30px;
-  letter-spacing:2px;
-  font-weight:800;
-}
-.header p{
-  font-size:13px;
-  color:#aaa;
-  font-style:italic;
+.header h1{font-size:30px;font-weight:800;}
+.header p{font-size:13px;color:#aaa;}
+
+/* SLIDER */
+.product-slider{
+  position:relative;
+  overflow:hidden;
+  max-width:340px;
+  margin:auto;
 }
 
-/* PRODUCT */
-.product{text-align:center;padding:10px;}
-.product img{
+.slides{
+  display:flex;
+  transition:0.45s cubic-bezier(.68,-0.55,.27,1.55);
+}
+
+.slides img{
   width:100%;
-  max-width:320px;
-  filter:drop-shadow(0 25px 50px rgba(0,0,0,0.9));
+  flex-shrink:0;
+}
+
+/* BADGE FIX */
+.badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:linear-gradient(45deg,#ff0000,#ff6600);
+  color:white;
+  padding:8px 12px;
+  font-size:12px;
+  border-radius:10px;
+  font-weight:700;
+  z-index:999;
+  box-shadow:0 8px 20px rgba(0,0,0,0.6);
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.1);}
+  100%{transform:scale(1);}
+}
+
+/* DOT */
+.dots{
+  position:absolute;
+  bottom:10px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+}
+.dot{
+  width:8px;
+  height:8px;
+  background:#777;
+  border-radius:50%;
+}
+.dot.active{
+  background:#fff;
+  transform:scale(1.2);
 }
 
 /* CARD */
@@ -54,29 +97,24 @@ body{
   margin:15px;
   padding:20px;
   background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
   border-radius:16px;
-  backdrop-filter:blur(6px);
 }
 
-/* PRICE */
-.price{
-  font-size:26px;
-  font-weight:600;
+/* VIEWER */
+.viewer{
+  font-size:13px;
+  color:#ffaa00;
+  margin-bottom:8px;
 }
 
-.stock{color:#00ffaa;font-size:14px;}
-.timer{color:#ff5555;font-size:14px;}
+.price{font-size:26px;font-weight:600;}
+.stock{color:#00ffaa;}
+.timer{color:#ff5555;}
 
-.desc{
-  color:#ccc;
-  font-size:14px;
-  margin-top:10px;
-  line-height:1.5;
-}
+.desc{color:#ccc;margin-top:10px;}
 
-/* SIZE */
-.size button{
+/* BUTTON */
+button{
   margin:5px;
   padding:10px;
   border-radius:8px;
@@ -84,79 +122,16 @@ body{
   border:1px solid #222;
   color:white;
 }
-.size button.active{
-  background:#222;
-  border:1px solid #555;
+button.active{
+  background:#ff6600;
+  border:none;
 }
 
-/* BUTTON */
 .btn{
   width:100%;
   padding:15px;
   margin-top:10px;
-  border:none;
   border-radius:12px;
-  background:linear-gradient(145deg,#111,#222);
-  color:white;
-  font-size:15px;
-  transition:0.3s;
-}
-.btn:hover{
-  background:linear-gradient(145deg,#222,#333);
-}
-
-/* ðŸ”” NOTIF */
-.notif{
-  position:fixed;
-  top:15px;
-  left:15px;
-  background:rgba(15,15,15,0.9);
-  border:1px solid rgba(255,255,255,0.1);
-  padding:10px;
-  border-radius:12px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  font-size:12px;
-  opacity:0;
-  transform:translateY(-20px) scale(0.95);
-  transition:0.3s ease;
-  z-index:999;
-  max-width:240px;
-}
-
-.notif-header{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:600;
-}
-
-.notif-body{
-  display:flex;
-  gap:8px;
-}
-
-.notif img{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-}
-
-.notif.show{
-  opacity:1;
-  transform:translateY(0) scale(1);
-}
-
-.notif:hover{
-  opacity:0.5;
-}
-
-#notifMain{
-  line-height:1.3;
-}
-#notifMain b{
-  color:#fff;
 }
 </style>
 </head>
@@ -165,133 +140,145 @@ body{
 
 <div class="cart">🛒<span id="cart">0</span></div>
 
-<!-- HEADER -->
 <div class="header">
   <h1>WIBUZONE APPAREL</h1>
   <p>Where Passion Meets Innovation</p>
 </div>
 
-<!-- PRODUCT -->
-<div class="product">
-  <img src="https://i.ibb.co.com/Xfq9LFyd/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-174634-0000.png">
+<!-- SLIDER -->
+<div class="product-slider" id="slider">
+  <div class="badge">🔥 LIMITED EDITION</div>
+
+  <div class="slides" id="slides">
+    <img src="https://i.ibb.co.com/Xfq9LFyd/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-174634-0000.png">
+    <img src="https://i.ibb.co.com/cSWf64ZR/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-214024-0000.png">
+  </div>
+
+  <div class="dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+  </div>
 </div>
 
-<!-- INFO -->
+<!-- CARD -->
 <div class="card">
-  <div class="price">$11.9 (~Rp185.000)</div>
-  <div class="stock">Stock tersisa: <span id="stock">6</span></div>
-  <div class="timer">Diskon habis: <span id="countdown"></span></div>
 
-  <div class="desc">
-    Crewneck premium bahan <b>Fleece Cotton 400 GSM</b><br>
-    🌟 Bordir towel premium<br>
-    🌟 Tebal & hangat<br>
-    🌟 Nyaman dipakai
-  </div>
-
-  <div class="size">
-    <p>Pilih Size:</p>
-    <button onclick="pick(this)">M</button>
-    <button onclick="pick(this)">L</button>
-    <button onclick="pick(this)">XL</button>
-  </div>
-
-  <button class="btn" onclick="addCart()">Tambah ke Keranjang</button>
-  <button class="btn" onclick="buy()">Beli Sekarang</button>
+<div class="viewer">
+👀 <span id="viewCount">12</span> orang sedang melihat produk ini
 </div>
 
-<!-- ðŸ”” NOTIF -->
-<div class="notif" id="notif">
-  <div class="notif-header">🔔 Pembelian Baru</div>
-  <div class="notif-body">
-    <img id="notifAvatar">
-    <div>
-      <div id="notifMain"></div>
-      <small id="notifTime" style="color:#aaa;"></small>
-    </div>
-  </div>
+<p>Pilih Variant:</p>
+<button onclick="setVariant('reguler', this)" class="active">Reguler</button>
+<button onclick="setVariant('limited', this)">Limited</button>
+
+<div class="price" id="price">$11.9 (~Rp185.000)</div>
+<div class="stock">Stock: <span id="stock">7</span></div>
+<div class="timer">Diskon: <span id="countdown"></span></div>
+
+<div class="desc" id="desc">
+Crewneck Reguler<br>
+🌟 Bordir depan saja<br>
+🌟 Fleece 400 GSM
+</div>
+
+<p>Pilih Size:</p>
+<button onclick="pick(this)">M</button>
+<button onclick="pick(this)">L</button>
+<button onclick="pick(this)">XL</button>
+
+<button class="btn" onclick="addCart()">Tambah ke Keranjang</button>
+<button class="btn" onclick="buy()">Beli Sekarang</button>
+
 </div>
 
 <script>
+
+// FIX ELEMENT
+let cartEl = document.getElementById("cart");
+
+// SLIDER
+let index = 0;
+let slides = document.getElementById("slides");
+let dots = document.querySelectorAll(".dot");
+
+function updateSlide(){
+  slides.style.transform = "translateX(-" + (index * 100) + "%)";
+  dots.forEach(d=>d.classList.remove("active"));
+  dots[index].classList.add("active");
+}
+
+setInterval(()=>{
+  index = (index + 1) % 2;
+  updateSlide();
+},4000);
+
+// SWIPE
+let startX = 0;
+document.getElementById("slider").addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+document.getElementById("slider").addEventListener("touchend", e=>{
+  let diff = startX - e.changedTouches[0].clientX;
+  if(diff > 50) index = (index + 1) % 2;
+  else if(diff < -50) index = (index - 1 + 2) % 2;
+  updateSlide();
+});
+
 // SIZE
 function pick(el){
-  document.querySelectorAll('.size button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.size button, .card button')
+    .forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
 
-// CART + STOCK
-let cart = 0;
-let stock = 7;
+// VARIANT
+let variant = "reguler";
+function setVariant(type, el){
+  variant = type;
 
-function addCart(){
-  if(stock <= 0){
-    alert("Stock habis!");
-    return;
+  document.querySelectorAll('.card button')
+    .forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+
+  if(type === "reguler"){
+    price.innerText = "$11.9 (~Rp185.000)";
+    desc.innerHTML = "Crewneck Reguler<br>🌟 Bordir depan<br>🌟 Fleece 400 GSM";
+  } else {
+    price.innerText = "$15.27 (~Rp260.000)";
+    desc.innerHTML = "Limited Edition 🔥<br>🌟 Bordir depan + lengan<br>🌟 Premium";
   }
-  cart++;
-  stock--;
-  document.getElementById("cart").innerText = cart;
-  document.getElementById("stock").innerText = stock;
+}
+
+// CART
+let cart=0, stock=8;
+function addCart(){
+  if(stock<=0) return alert("Habis!");
+  cart++; stock--;
+  cartEl.innerText=cart;
+  document.getElementById("stock").innerText=stock;
 }
 
 // BUY
 function buy(){
-  let size = document.querySelector('.active');
-  if(!size){
-    alert("Pilih size dulu!");
-    return;
-  }
-  let text = "Order Crewneck WIBUZONE size " + size.innerText;
-  window.open("https://wa.me/6281284760551?text="+encodeURIComponent(text));
+  let size = document.querySelector('.size button.active');
+  if(!size) return alert("Pilih size!");
+  window.open("https://wa.me/6281284760551?text="+encodeURIComponent("Order "+variant+" size "+size.innerText));
 }
 
 // COUNTDOWN
 let end = new Date().getTime() + (3*24*60*60*1000);
-
 setInterval(()=>{
-  let now = new Date().getTime();
-  let diff = end - now;
-
-  let d = Math.floor(diff/(1000*60*60*24));
-  let h = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
-  let m = Math.floor((diff%(1000*60*60))/(1000*60));
-
-  document.getElementById("countdown").innerText = d+"H "+h+"J "+m+"M";
+  let d=end-new Date().getTime();
+  let h=Math.floor(d/1000/60/60);
+  document.getElementById("countdown").innerText=h+" jam";
 },1000);
 
-// ðŸ”” NOTIF
-let buyers = [
-  {name:"Rizky", city:"Bandung", text:"Gila bahannya tebel banget!"},
-  {name:"Andi", city:"Jakarta", text:"Asli keren parah"},
-  {name:"Fajar", city:"Surabaya", text:"Bordirnya keliatan mahal"},
-  {name:"Dimas", city:"Medan", text:"Nyaman dipakai"},
-  {name:"Adit", city:"Bekasi", text:"Worth it banget"},
-  {name:"Ilham", city:"Depok", text:"Fix beli lagi"}
-];
-
-function randomTime(){
-  let times = ["Barusan","1 menit lalu","2 menit lalu","5 menit lalu"];
-  return times[Math.floor(Math.random()*times.length)];
-}
-
+// VIEWER
 setInterval(()=>{
-  let user = buyers[Math.floor(Math.random()*buyers.length)];
+  document.getElementById("viewCount").innerText = Math.floor(Math.random()*10)+8;
+},3000);
 
-  document.getElementById("notifAvatar").src =
-    "https://i.pravatar.cc/150?img=" + Math.floor(Math.random()*70);
-
-  document.getElementById("notifMain").innerHTML =
-    "<b>" + user.name + "</b> (" + user.city + ")<br>\"" + user.text + "\"";
-
-  document.getElementById("notifTime").innerText = randomTime();
-
-  let notif = document.getElementById("notif");
-  notif.classList.add("show");
-
-  setTimeout(()=>notif.classList.remove("show"),2500);
-
-},5000);
 </script>
 
 </body>
-    </html>
+</html>
