@@ -50,7 +50,7 @@ body{
   flex-shrink:0;
 }
 
-/* BADGE FIX */
+/* BADGE */
 .badge{
   position:absolute;
   top:12px;
@@ -62,7 +62,6 @@ body{
   border-radius:10px;
   font-weight:700;
   z-index:999;
-  box-shadow:0 8px 20px rgba(0,0,0,0.6);
   animation:pulse 1.5s infinite;
 }
 
@@ -147,7 +146,7 @@ button.active{
 
 <!-- SLIDER -->
 <div class="product-slider" id="slider">
-  <div class="badge">🔥 LIMITED EDITION</div>
+  <div class="badge">🔥 LIMITED STOCK</div>
 
   <div class="slides" id="slides">
     <img src="https://i.ibb.co.com/Xfq9LFyd/putih-dan-cokelat-modern-simple-promosi-hoodie-pria-konten-instagram-20260330-174634-0000.png">
@@ -193,7 +192,7 @@ Crewneck Reguler<br>
 
 <script>
 
-// FIX ELEMENT
+// CART
 let cartEl = document.getElementById("cart");
 
 // SLIDER
@@ -225,10 +224,11 @@ document.getElementById("slider").addEventListener("touchend", e=>{
 });
 
 // SIZE
+let selectedSize = null;
 function pick(el){
-  document.querySelectorAll('.size button, .card button')
-    .forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.card button').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  selectedSize = el.innerText;
 }
 
 // VARIANT
@@ -236,8 +236,7 @@ let variant = "reguler";
 function setVariant(type, el){
   variant = type;
 
-  document.querySelectorAll('.card button')
-    .forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.card button').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 
   if(type === "reguler"){
@@ -250,7 +249,7 @@ function setVariant(type, el){
 }
 
 // CART
-let cart=0, stock=8;
+let cart=0, stock=7;
 function addCart(){
   if(stock<=0) return alert("Habis!");
   cart++; stock--;
@@ -258,11 +257,17 @@ function addCart(){
   document.getElementById("stock").innerText=stock;
 }
 
-// BUY
+// 🔥 FINAL BUY (KE PAY.HTML)
 function buy(){
-  let size = document.querySelector('.size button.active');
-  if(!size) return alert("Pilih size!");
-  window.open("https://wa.me/6281284760551?text="+encodeURIComponent("Order "+variant+" size "+size.innerText));
+
+  if(!selectedSize){
+    alert("Pilih size dulu!");
+    return;
+  }
+
+  let url = `pay.html?variant=${variant}&size=${selectedSize}`;
+
+  window.location.href = url;
 }
 
 // COUNTDOWN
